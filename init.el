@@ -29,6 +29,9 @@
   (js-jsx-mode)
   )
 
+;; ;; TEST! Delete if causes problems and just use _jsx
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . 'js-jsx-mode))
+
 ;; Scss mode
 (require 'scss-mode)
 
@@ -44,9 +47,10 @@
 (setq scroll-conservatively 10)
 (setq tab-width 4)
 (electric-pair-mode)
-(setq truncate-lines 0)
+(setq truncate-lines t)
+(setq visual-line-mode nil)
 
-					; Disable middle mouse btn
+                                        ; Disable middle mouse btn
 (global-unset-key [mouse-2])
 
 ;; Set buffer limit to a lot
@@ -232,7 +236,7 @@
 (defvar buebo-mode-map (make-keymap) "buebo-mode-map keymap")
 (defvar buebo-global-mode-map (make-keymap) "buebo-global-mode-keymap")
 
-					; Misc keymaps
+                                        ; Misc keymaps
 (define-key buebo-global-mode-map (kbd "C-<backspace>") 'backward-delete-word)
 (define-key buebo-global-mode-map (kbd "M-g") 'goto-line)
 (define-key buebo-global-mode-map (kbd "C-<tab>") (kbd "C-x o"))
@@ -240,7 +244,7 @@
 (define-key buebo-mode-map (kbd "C-SPC") 'newline)
 (define-key buebo-mode-map (kbd "C-z") 'undo)
 
-					; Navigate using C-hjkl
+                                        ; Navigate using C-hjkl
 (define-key buebo-mode-map (kbd "C-h") 'backward-char)
 (define-key buebo-mode-map (kbd "C-j") 'next-line)
 (define-key buebo-mode-map (kbd "C-k") 'previous-line)
@@ -256,7 +260,7 @@
 (define-key buebo-mode-map (kbd "C-u") 'delete-backward-char)
 (define-key buebo-mode-map (kbd "C-i") 'delete-forward-char)
 
-					; Mark and operate
+                                        ; Mark and operate
 (define-key buebo-mode-map (kbd "C-q") 'set-mark-command)
 (define-key buebo-mode-map (kbd "C-w") 'clipboard-kill-ring-save)
 (define-key buebo-mode-map (kbd "C-e") 'yank)
@@ -268,7 +272,7 @@
 (define-key buebo-mode-map (kbd "C-g") 'move-line-down)
 (define-key buebo-mode-map (kbd "C-b") 'delete-region)
 
-					; Global keybindings (work on special modes such as dired and shell)
+                                        ; Global keybindings (work on special modes such as dired and shell)
 (dolist (m (list buebo-global-mode-map))
 
   (define-key m (kbd "C-'") 'dabbrev-expand)
@@ -279,9 +283,9 @@
   (define-key m (kbd "M-<right>") 'switch-to-next-buffer)
   (define-key m (kbd "M-<up>") 'switch-to-buffer)
 
-					; Navigation with tab
+                                        ; Navigation with tab
   (define-key m (kbd "<tab> l") 'end-of-line)
-  (define-key m (kbd "<tab> h") 'beginning-of-line)
+  (define-key m (kbd "<tab> h") 'beginning-of-line-text)
   (define-key m (kbd "<tab> k") 'beginning-of-buffer)
   (define-key m (kbd "<tab> j") 'end-of-buffer)
 
@@ -301,7 +305,7 @@
   (define-key m (kbd "<tab> 2") 'save-buffer)
   (define-key m (kbd "<tab> 9") 'eval-buffer)
 
-  (define-key m (kbd "<tab> b") 'fill-lines-and-delete)
+  (define-key m (kbd "<tab> b") 'delete-rectangle)
   (define-key m (kbd "<tab> <tab>") 'indent-region)
   )
 
@@ -343,6 +347,7 @@
 (add-hook 'text-mode-hook 'buebo-global-mode)
 (add-hook 'web-mode-hook 'buebo-global-mode)
 (add-hook 'js-jsx-mode-hook 'buebo-global-mode)
+(add-hook 'messages-buffer-mode-hook 'buebo-global-mode)
 
 (add-hook 'shell-mode-hook 'buebo-global-mode)
 (add-hook 'dired-mode-hook 'buebo-global-mode)
@@ -429,7 +434,57 @@
   (setq comment-foreground "#fff")
   (setq string-foreground "#aaa")
 
-  (set-background-color "#221a0f")
+  (set-background-color "#251d13")
+  (set-foreground-color default-foreground)
+
+  (set-face-attribute 'default nil
+                      :family "Liberation Mono"
+                      :height 110
+                      :weight 'normal
+                      :width 'normal)
+
+  (set-cursor-color "#fff")
+
+  (set-face-attribute 'region nil :weight 'normal
+                      :background "#ccc"
+                      :foreground "#000")
+
+  (set-face-attribute 'font-lock-builtin-face nil :weight 'normal
+                      :foreground default-foreground)
+
+  (set-face-attribute 'font-lock-comment-face nil :weight 'normal
+                      :foreground comment-foreground)
+
+  (set-face-attribute 'font-lock-constant-face nil :weight 'normal
+                      :foreground default-foreground)
+
+  (set-face-attribute 'font-lock-doc-face nil :weight 'normal
+                      :foreground default-foreground)
+
+  (set-face-attribute 'font-lock-function-name-face nil :weight 'normal
+                      :foreground default-foreground)
+
+  (set-face-attribute 'font-lock-keyword-face nil :weight 'normal
+                      :foreground "#ddd")
+
+  (set-face-attribute 'font-lock-string-face nil :weight 'normal
+                      :foreground string-foreground)
+
+  (set-face-attribute 'font-lock-type-face nil :weight 'normal
+                      :foreground default-foreground)
+
+  (set-face-attribute 'font-lock-variable-name-face nil :weight 'normal
+                      :foreground default-foreground)
+  )
+
+(defun _set-gray-theme ()
+  (interactive)
+
+  (setq default-foreground "#eee")
+  (setq comment-foreground "#8af")
+  (setq string-foreground "#aaa")
+
+  (set-background-color "#202020")
   (set-foreground-color default-foreground)
 
   (set-face-attribute 'default nil
@@ -477,7 +532,8 @@
   (define-key m (kbd "<tab> t 2") '_set-darkroot-theme)
   (define-key m (kbd "<tab> t 3") '_set-red-theme)
   (define-key m (kbd "<tab> t 4") '_set-brown-theme)
+  (define-key m (kbd "<tab> t 5") '_set-gray-theme)
   )
 
 ;; DEFAULT THEME
-(_set-darkroot-theme)
+(_set-brown-theme)
