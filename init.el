@@ -3,7 +3,7 @@
 ;; Window configuration
 (add-to-list 'default-frame-alist '(maximized))
 (desktop-save-mode 1)
-(add-hook 'after-init-hook '_set-darkroot-theme)
+;; (add-hook 'after-init-hook '_set-darkroot-theme)
 (setq inhibit-startup-message t)
 (setq read-buffer-completion-ignore-case t)
 
@@ -29,8 +29,13 @@
   (js-jsx-mode)
   )
 
-;; ;; TEST! Delete if causes problems and just use _jsx
-;; (add-to-list 'auto-mode-alist '("\\.js\\'" . 'js-jsx-mode))
+(defun remove-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (setq buffer-display-table (make-display-table))
+  (aset buffer-display-table ?\^M []))
+
+(add-hook 'emacs-startup-hook 'remove-dos-eol)
 
 ;; Scss mode
 (require 'scss-mode)
@@ -69,6 +74,7 @@
 (defconst buebo-c-style
   '((c-tab-always-indent        . nil)
     (c-comment-only-line-offset . 4)
+    (c-toggle-comment-style -1)
     (c-offsets-alist            . ((arglist-close . 0)
                                    (arglist-cont-nonempty . 6)
                                    (substatement-open . 0)
@@ -82,6 +88,7 @@
                                    (statement . 0)
                                    (statement-cont . 0)
                                    (topmost-intro-cont . 4)
+				   
                                    ))
     (c-echo-syntactic-information-p . t)
     )
@@ -95,7 +102,9 @@
         indent-tabs-mode nil)
   )
 
-(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+(add-hook 'cc-mode-hook 'my-c-mode-common-hook)
+(add-hook 'c-mode-hook 'my-c-mode-common-hook)
+
 
 ;; Formatting for web mode
 (setq-local web-mode-markup-indent-offset 4)
@@ -154,7 +163,7 @@
 
 (defun previous-blank-line ()
   (interactive)
-  (if (eq (search-backward-regexp "^[ \t]*\n" nil t) nil)
+  (if (eq (search-backward-regexp "^[ \t]*[\n\r]" nil t) nil)
       (progn
         (beginning-of-buffer)
         (beginning-of-line))
@@ -164,7 +173,7 @@
 (defun next-blank-line ()
   (interactive)
   (forward-line)
-  (if (eq (search-forward-regexp "^[ \t]*\n" nil t) nil)
+  (if (eq (search-forward-regexp "^[ \t]*[\n\r]" nil t) nil)
       (progn
         (end-of-buffer)
         (end-of-visual-line))
@@ -220,6 +229,22 @@
   (interactive "p")
   (delete-region (point) (progn (backward-word arg) (point))))
 
+(defun copy-if-nonempty ()
+  (interactive)
+  (if mark-active
+      (progn
+		(if (/= (region-beginning) (region-end))
+			(clipboard-kill-ring-save (point) (mark))
+		  ))))
+
+(defun cut-if-nonempty ()
+  (interactive)
+  (if mark-active
+      (progn
+		(if (/= (region-beginning) (region-end))
+			(clipboard-kill-region (point) (mark))
+		  ))))
+
 (defun indent-and-newline ()
   (interactive)
   (indent-region (point) (mark))
@@ -228,7 +253,6 @@
 (defun open-explorer-here ()
   (interactive)
   (shell-command "explorer ."))
-
 
 ;; --------------------------------
 ;; KEYMAPS
@@ -254,17 +278,17 @@
 (define-key buebo-mode-map (kbd "C-m") 'next-blank-line)
 (define-key buebo-mode-map (kbd "C-,") 'previous-blank-line)
 (define-key buebo-mode-map (kbd "C-.") 'forward-word)
-
 (define-key buebo-mode-map (kbd "C-y") 'backward-delete-word)
+
 (define-key buebo-mode-map (kbd "C-o") 'kill-word)
 (define-key buebo-mode-map (kbd "C-u") 'delete-backward-char)
 (define-key buebo-mode-map (kbd "C-i") 'delete-forward-char)
 
                                         ; Mark and operate
 (define-key buebo-mode-map (kbd "C-q") 'set-mark-command)
-(define-key buebo-mode-map (kbd "C-w") 'clipboard-kill-ring-save)
+(define-key buebo-mode-map (kbd "C-w") 'copy-if-nonempty)
 (define-key buebo-mode-map (kbd "C-e") 'yank)
-(define-key buebo-mode-map (kbd "C-r") 'clipboard-kill-region)
+(define-key buebo-mode-map (kbd "C-r") 'cut-if-nonempty)
 
 (define-key buebo-mode-map (kbd "C-f") 'delete-horizontal-space)
 
@@ -307,6 +331,8 @@
 
   (define-key m (kbd "<tab> b") 'delete-rectangle)
   (define-key m (kbd "<tab> <tab>") 'indent-region)
+
+  (define-key m (kbd "<tab> d") 'open-explorer-here)
   )
 
 ;; --------------------------------
@@ -536,4 +562,4 @@
   )
 
 ;; DEFAULT THEME
-(_set-brown-theme)
+(add-hook 'emacs-startup-hook '_set-brown-theme)
