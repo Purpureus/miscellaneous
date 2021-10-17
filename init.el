@@ -1,6 +1,6 @@
 (require 'cc-mode)
 
-;; Window configuration
+                                        ; Window configuration
 (add-to-list 'default-frame-alist '(maximized))
 (desktop-save-mode 1)
 ;; (add-hook 'after-init-hook '_set-darkroot-theme)
@@ -14,8 +14,9 @@
   (find-file default-file-path)
   )
 
-;; Importing minor modes
+                                        ; Importing minor modes
 (add-to-list 'load-path "~/.emacs.d/modes")
+(load "~/.emacs.d/themes")
 
 (require 'emmet-mode)
 (add-hook 'sgml-mode-hook 'emmet-mode)
@@ -24,23 +25,11 @@
 (add-hook 'js-mode-hook 'emmet-mode)
 (setq emmet-expand-jsx-className? t)
 
-(defun _jsx ()
-  (interactive)
-  (js-jsx-mode)
-  )
+(add-hook 'emacs-startup-hook '_set-brown-theme)
 
-(defun remove-dos-eol ()
-  "Do not show ^M in files containing mixed UNIX and DOS line endings."
-  (interactive)
-  (setq buffer-display-table (make-display-table))
-  (aset buffer-display-table ?\^M []))
+(add-to-list 'auto-mode-alist '("\\.glsl\\'" . c-mode))
 
-(add-hook 'emacs-startup-hook 'remove-dos-eol)
-
-;; Scss mode
-(require 'scss-mode)
-
-;; Cursor & navigation
+                                        ; Cursor & navigation
 (blink-cursor-mode 0)
 (show-paren-mode 1)
 (setq show-paren-delay 0)
@@ -52,50 +41,54 @@
 (setq scroll-conservatively 10)
 (setq tab-width 4)
 (electric-pair-mode)
-(setq truncate-lines t)
+;; (setq truncate-lines t)
 (setq visual-line-mode nil)
+(delete-selection-mode)
 
-                                        ; Disable middle mouse btn
+;; Disable middle mouse btn
 (global-unset-key [mouse-2])
 
 ;; Set buffer limit to a lot
-(setq undo-limit 2000000)
+(setq undo-limit 999999)
 (setq undo-strong-limit 4000000)
 
 (setq dabbrev-case-replace t)
 (setq dabbrev-case-fold-search t)
 (setq dabbrev-upcase-means-case-search t)
 
-;; --------------------------------
-;; FORMATTING
-;; --------------------------------
+;; -------------------- ;;
+;; ---- FORMATTING ---- ;;
+;; -------------------- ;;
 
 ;; Formatting for all modes in CC Mode.
-(defconst buebo-c-style
-  '((c-tab-always-indent        . nil)
+(defconst purpureus-c-style
+  '(
+    (c-tab-always-indent . nil)
+    (setq-default c-basic-offset 4)
     (c-comment-only-line-offset . 4)
     (c-toggle-comment-style -1)
-    (c-offsets-alist            . ((arglist-close . 0)
-                                   (arglist-cont-nonempty . 6)
-                                   (substatement-open . 0)
-                                   (case-label        . 4)
-                                   (block-open        . 4)
-                                   kill  (knr-argdecl-intro . -)
-                                   (brace-list-open   . 4)
-                                   (statement-case-open . 0)
-                                   (comment-intro . 0)
-                                   (statement-block-intro . 4)
-                                   (statement . 0)
-                                   (statement-cont . 0)
-                                   (topmost-intro-cont . 4)
-				   
-                                   ))
+    (c-offsets-alist
+     . (
+        (arglist-close . 0)
+        (arglist-cont-nonempty . c-lineup-arglist)
+        (substatement-open . 0)
+        (case-label        . 4)
+        (block-open        . 4)
+        (brace-list-open   . 4)
+        (statement-case-open . 0)
+        (comment-intro . 0)
+        (statement-block-intro . 4)
+        (statement . 0)
+        (statement-cont . 0)
+        (topmost-intro-cont . 0)
+        )
+     )
     (c-echo-syntactic-information-p . t)
     )
-  "Buebo CC style")
+  "Purpureus CC style")
 
 (defun my-c-mode-common-hook ()
-  (c-add-style "PERSONAL" buebo-c-style t)
+  (c-add-style "Purpureus style" purpureus-c-style t)
   (c-toggle-auto-newline -1)
   (c-toggle-comment-style -1)
   (setq tab-width 4
@@ -105,24 +98,32 @@
 (add-hook 'cc-mode-hook 'my-c-mode-common-hook)
 (add-hook 'c-mode-hook 'my-c-mode-common-hook)
 
+;; ------------------------ ;;
+;; ---- WEB MODE STUFF ---- ;;
+;; ------------------------ ;;
+;; (setq-local web-mode-markup-indent-offset 4)
 
-;; Formatting for web mode
-(setq-local web-mode-markup-indent-offset 4)
+;; (defun purpureus-html-hook ()
+;;   (setq sgml-basic-offset 4)
+;;   (setq indent-tabs-mode nil)
+;;   )
 
-(defun buebo-html-hook ()
-  (setq sgml-basic-offset 4)
-  (setq indent-tabs-mode nil)
-  )
-
-(add-hook 'html-mode-hook 'buebo-html-hook)
-(add-hook 'sgml-mode-hook 'buebo-html-hook)
-(add-hook 'sass-mode-hook 'buebo-html-hook)
-(add-hook 'scss-mode-hook 'buebo-html-hook)
+;; (add-hook 'html-mode-hook 'purpureus-html-hook)
+;; (add-hook 'sgml-mode-hook 'purpureus-html-hook)
+;; (add-hook 'sass-mode-hook 'purpureus-html-hook)
+;; (add-hook 'scss-mode-hook 'purpureus-html-hook)
 
 ;; -----------------------------------
 ;; COMMANDS
 ;; -----------------------------------
 (setq initial-buffer-choice "~/.emacs.d/init.el")
+
+(defun remove-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (setq buffer-display-table (make-display-table))
+  (aset buffer-display-table ?\^M []))
+(add-hook 'emacs-startup-hook 'remove-dos-eol)
 
 (defun reform-document ()
   (interactive)
@@ -137,6 +138,10 @@
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
+(defun _themes ()
+  (interactive)
+  (find-file "~/.emacs.d/themes.el"))
+
 (defun vsp ()
   (interactive)
   (split-window-horizontally)
@@ -145,41 +150,6 @@
 (defun sp ()
   (interactive)
   (split-window-vertically))
-
-(defun move-line-up ()
-  (interactive)
-  (transpose-lines 1)
-  (forward-line -2)
-  (indent-according-to-mode)
-  )
-
-(defun move-line-down ()
-  (interactive)
-  (forward-line 1)
-  (transpose-lines 1)
-  (forward-line -1)
-  (indent-according-to-mode)
-  )
-
-(defun previous-blank-line ()
-  (interactive)
-  (if (eq (search-backward-regexp "^[ \t]*[\n\r]" nil t) nil)
-      (progn
-        (beginning-of-buffer)
-        (beginning-of-line))
-    )
-  )
-
-(defun next-blank-line ()
-  (interactive)
-  (forward-line)
-  (if (eq (search-forward-regexp "^[ \t]*[\n\r]" nil t) nil)
-      (progn
-        (end-of-buffer)
-        (end-of-visual-line))
-    (forward-line -1)
-    )
-  )
 
 (defun select-line ()
   (interactive)
@@ -233,17 +203,17 @@
   (interactive)
   (if mark-active
       (progn
-		(if (/= (region-beginning) (region-end))
-			(clipboard-kill-ring-save (point) (mark))
-		  ))))
+        (if (/= (region-beginning) (region-end))
+            (clipboard-kill-ring-save (point) (mark))
+          ))))
 
 (defun cut-if-nonempty ()
   (interactive)
   (if mark-active
       (progn
-		(if (/= (region-beginning) (region-end))
-			(clipboard-kill-region (point) (mark))
-		  ))))
+        (if (/= (region-beginning) (region-end))
+            (clipboard-kill-region (point) (mark))
+          ))))
 
 (defun indent-and-newline ()
   (interactive)
@@ -254,312 +224,218 @@
   (interactive)
   (shell-command "explorer ."))
 
-;; --------------------------------
-;; KEYMAPS
-;; --------------------------------
-(defvar buebo-mode-map (make-keymap) "buebo-mode-map keymap")
-(defvar buebo-global-mode-map (make-keymap) "buebo-global-mode-keymap")
+;; ---- MOVE TEXT ---- ;;
+(defun move-text-internal (arg)
+  (cond
+   ((and mark-active transient-mark-mode)
+    (if (> (point) (mark))
+        (exchange-point-and-mark))
+    (let ((column (current-column))
+          (text (delete-and-extract-region (point) (mark))))
+      (forward-line arg)
+      (move-to-column column t)
+      (set-mark (point))
+      (insert text)
+      (exchange-point-and-mark)
+      (setq deactivate-mark nil)))
+   (t
+    (beginning-of-line)
+    (when (or (> arg 0) (not (bobp)))
+      (forward-line)
+      (when (or (< arg 0) (not (eobp)))
+        (transpose-lines arg))
+      (forward-line -1)))))
 
-                                        ; Misc keymaps
-(define-key buebo-global-mode-map (kbd "C-<backspace>") 'backward-delete-word)
-(define-key buebo-global-mode-map (kbd "M-g") 'goto-line)
-(define-key buebo-global-mode-map (kbd "C-<tab>") (kbd "C-x o"))
-(define-key buebo-global-mode-map (kbd "M-<f4>") 'kill-emacs)
-(define-key buebo-mode-map (kbd "C-SPC") 'newline)
-(define-key buebo-mode-map (kbd "C-z") 'undo)
+(defun move-text-down (arg)
+  "Move region (transient-mark-mode active) or current line
+  arg lines down."
+  (interactive "*p")
+  (move-text-internal arg))
 
-                                        ; Navigate using C-hjkl
-(define-key buebo-mode-map (kbd "C-h") 'backward-char)
-(define-key buebo-mode-map (kbd "C-j") 'next-line)
-(define-key buebo-mode-map (kbd "C-k") 'previous-line)
-(define-key buebo-mode-map (kbd "C-l") 'forward-char)
+(defun move-text-up (arg)
+  "Move region (transient-mark-mode active) or current line
+  arg lines up."
+  (interactive "*p")
+  (move-text-internal (- arg)))
 
-(define-key buebo-mode-map (kbd "C-n") 'backward-word)
-(define-key buebo-mode-map (kbd "C-m") 'next-blank-line)
-(define-key buebo-mode-map (kbd "C-,") 'previous-blank-line)
-(define-key buebo-mode-map (kbd "C-.") 'forward-word)
-(define-key buebo-mode-map (kbd "C-y") 'backward-delete-word)
-
-(define-key buebo-mode-map (kbd "C-o") 'kill-word)
-(define-key buebo-mode-map (kbd "C-u") 'delete-backward-char)
-(define-key buebo-mode-map (kbd "C-i") 'delete-forward-char)
-
-                                        ; Mark and operate
-(define-key buebo-mode-map (kbd "C-q") 'set-mark-command)
-(define-key buebo-mode-map (kbd "C-w") 'copy-if-nonempty)
-(define-key buebo-mode-map (kbd "C-e") 'yank)
-(define-key buebo-mode-map (kbd "C-r") 'cut-if-nonempty)
-
-(define-key buebo-mode-map (kbd "C-f") 'delete-horizontal-space)
-
-(define-key buebo-mode-map (kbd "C-t") 'move-line-up)
-(define-key buebo-mode-map (kbd "C-g") 'move-line-down)
-(define-key buebo-mode-map (kbd "C-b") 'delete-region)
-
-                                        ; Global keybindings (work on special modes such as dired and shell)
-(dolist (m (list buebo-global-mode-map))
-
-  (define-key m (kbd "C-'") 'dabbrev-expand)
-  (define-key m (kbd "C-º") 'kill-buffer)
-  (define-key m (kbd "C-+") 'execute-extended-command)
-
-  (define-key m (kbd "M-<left>") 'switch-to-prev-buffer)
-  (define-key m (kbd "M-<right>") 'switch-to-next-buffer)
-  (define-key m (kbd "M-<up>") 'switch-to-buffer)
-
-                                        ; Navigation with tab
-  (define-key m (kbd "<tab> l") 'end-of-line)
-  (define-key m (kbd "<tab> h") 'beginning-of-line-text)
-  (define-key m (kbd "<tab> k") 'beginning-of-buffer)
-  (define-key m (kbd "<tab> j") 'end-of-buffer)
-
-                                        ; Line operations
-  (define-key m (kbd "<tab> y") 'kill-whole-line)
-  (define-key m (kbd "<tab> u") 'comment-line)
-  (define-key m (kbd "<tab> i") 'select-line-no-whitespace)
-
-  (define-key m (kbd "<tab> q") 'region-fill-lines)
-  (define-key m (kbd "<tab> w") 'select-function)
-
-  (define-key m (kbd "<tab> a") 'delete-region)
-  (define-key m (kbd "<tab> s") 'delete-rectangle)
-
-  (define-key m (kbd "<tab> º") 'kill-buffer-and-window)
-  (define-key m (kbd "<tab> 1") 'buffer-menu)
-  (define-key m (kbd "<tab> 2") 'save-buffer)
-  (define-key m (kbd "<tab> 9") 'eval-buffer)
-
-  (define-key m (kbd "<tab> b") 'delete-rectangle)
-  (define-key m (kbd "<tab> <tab>") 'indent-region)
-
-  (define-key m (kbd "<tab> d") 'open-explorer-here)
-  )
-
-;; --------------------------------
-;; Minor mode for keymaps
-;; --------------------------------
-(defun turn-on-buebo-mode () (interactive) (buebo-mode 1) )
-(define-minor-mode buebo-mode "Pinky-friendly minor mode" nil 'buebo-mode-map)
-(define-minor-mode buebo-global-mode "Pinky-friendly GLOBAL minor mode" nil 'buebo-global-mode-map)
-
-(add-hook 'sqml-mode-hook 'buebo-mode)
-(add-hook 'html-mode-hook 'buebo-mode)
-(add-hook 'css-mode-hook 'buebo-mode)
-(add-hook 'haml-mode-hook 'buebo-mode)
-(add-hook 'sass-mode-hook 'buebo-mode)
-(add-hook 'js-mode-hook 'buebo-mode)
-(add-hook 'c-mode-common-hook 'buebo-mode)
-(add-hook 'cc-mode-hook 'buebo-mode)
-(add-hook 'cpp-mode-hook 'buebo-mode)
-(add-hook 'emacs-lisp-mode-hook 'buebo-mode)
-(add-hook 'buffer-menu-mode-hook 'buebo-mode)
-(add-hook 'help-mode-hook 'buebo-mode)
-(add-hook 'text-mode-hook 'buebo-mode)
-(add-hook 'web-mode-hook 'buebo-mode)
-(add-hook 'js-jsx-mode-hook 'buebo-mode)
-
-(add-hook 'sqml-mode-hook 'buebo-global-mode)
-(add-hook 'html-mode-hook 'buebo-global-mode)
-(add-hook 'css-mode-hook 'buebo-global-mode)
-(add-hook 'haml-mode-hook 'buebo-global-mode)
-(add-hook 'sass-mode-hook 'buebo-global-mode)
-(add-hook 'js-mode-hook 'buebo-global-mode)
-(add-hook 'c-mode-common-hook 'buebo-global-mode)
-(add-hook 'cc-mode-hook 'buebo-global-mode)
-(add-hook 'cpp-mode-hook 'buebo-global-mode)
-(add-hook 'emacs-lisp-mode-hook 'buebo-global-mode)
-(add-hook 'buffer-menu-mode-hook 'buebo-global-mode)
-(add-hook 'help-mode-hook 'buebo-global-mode)
-(add-hook 'text-mode-hook 'buebo-global-mode)
-(add-hook 'web-mode-hook 'buebo-global-mode)
-(add-hook 'js-jsx-mode-hook 'buebo-global-mode)
-(add-hook 'messages-buffer-mode-hook 'buebo-global-mode)
-
-(add-hook 'shell-mode-hook 'buebo-global-mode)
-(add-hook 'dired-mode-hook 'buebo-global-mode)
-
-;; --------------------------------------
-;; THEME
-;; --------------------------------------
-(defun _set-darkroot-theme ()
+(defun delete-word ()
   (interactive)
-  (set-background-color "#09261c")
-  (set-foreground-color "#a0ebc0")
-
-  (set-face-attribute 'default nil
-                      :family "Liberation Mono"
-                      :height 110
-                      :weight 'normal
-                      :width 'normal)
-
-  (set-cursor-color "#0ff")
-  (set-face-attribute 'region nil :background "#066" :foreground "#f4f4f4")
-  (set-face-attribute 'font-lock-builtin-face nil :weight 'bold :foreground "#abc")
-  (set-face-attribute 'font-lock-comment-face nil :weight 'bold :foreground "#fff")
-  (set-face-attribute 'font-lock-constant-face nil :weight 'bold :foreground "#cab")
-  (set-face-attribute 'font-lock-doc-face nil :foreground "gray50")
-  (set-face-attribute 'font-lock-function-name-face nil :weight 'bold :foreground "#cba")
-  (set-face-attribute 'font-lock-keyword-face nil :weight 'bold :foreground "#ccc")
-  (set-face-attribute 'font-lock-string-face nil :foreground "#fff")
-  (set-face-attribute 'font-lock-type-face nil :foreground "#eee")
-  (set-face-attribute 'font-lock-variable-name-face nil :foreground "#acb")
+  (kill-word 1)
+  (pop kill-ring)
   )
 
-(defun _set-red-theme ()
+(defun surround-with-paren ()
   (interactive)
-  (set-background-color "#332222")
-  (set-foreground-color "#eee")
-
-  (set-face-attribute 'default nil
-                      :family "Liberation Mono"
-                      :height 110
-                      :weight 'normal
-                      :width 'normal)
-
-  (set-cursor-color "#f66")
-  (set-face-attribute 'region nil :background "#844" :foreground "#f4f4f4")
-  (set-face-attribute 'font-lock-builtin-face nil :weight 'bold :foreground "#db9")
-  (set-face-attribute 'font-lock-comment-face nil :weight 'bold :foreground "#fff")
-  (set-face-attribute 'font-lock-constant-face nil :weight 'bold :foreground "#f44")
-  (set-face-attribute 'font-lock-doc-face nil :foreground "#aad")
-  (set-face-attribute 'font-lock-function-name-face nil :weight 'bold :foreground "#f88")
-  (set-face-attribute 'font-lock-keyword-face nil :weight 'bold :foreground "#c88")
-  (set-face-attribute 'font-lock-string-face nil :foreground "#fff")
-  (set-face-attribute 'font-lock-type-face nil :foreground "#fda")
-  (set-face-attribute 'font-lock-variable-name-face nil :foreground "#eee")
+  (insert-pair -1 ?\( ?\))
   )
 
-(defun _set-light-theme ()
+(defun surround-with-braces ()
   (interactive)
-  (set-background-color "#ede9de")
-  (set-foreground-color "#000")
-
-  (set-face-attribute 'default nil
-                      :family "Liberation Mono"
-                      :height 110
-                      :weight 'normal
-                      :width 'normal)
-
-  (set-cursor-color "#000")
-  (set-face-attribute 'region nil :background "#852" :foreground "#f4f4f4")
-  (set-face-attribute 'font-lock-builtin-face nil :weight 'bold :foreground "#420")
-  (set-face-attribute 'font-lock-comment-face nil :weight 'bold :foreground "#000")
-  (set-face-attribute 'font-lock-constant-face nil :weight 'bold :foreground "#876")
-  (set-face-attribute 'font-lock-doc-face nil :foreground "#880")
-  (set-face-attribute 'font-lock-function-name-face nil :weight 'bold :foreground "#630")
-  (set-face-attribute 'font-lock-keyword-face nil :weight 'bold :foreground "#000")
-  (set-face-attribute 'font-lock-string-face nil :foreground "#630")
-  (set-face-attribute 'font-lock-type-face nil :foreground "#630")
-  (set-face-attribute 'font-lock-variable-name-face nil :foreground "#111")
+  (insert-pair -1 ?\{ ?\})
   )
 
-(defun _set-brown-theme ()
+(defun surround-with-brackets ()
   (interactive)
-
-  (setq default-foreground "#d3af86")
-  (setq comment-foreground "#fff")
-  (setq string-foreground "#aaa")
-
-  (set-background-color "#251d13")
-  (set-foreground-color default-foreground)
-
-  (set-face-attribute 'default nil
-                      :family "Liberation Mono"
-                      :height 110
-                      :weight 'normal
-                      :width 'normal)
-
-  (set-cursor-color "#fff")
-
-  (set-face-attribute 'region nil :weight 'normal
-                      :background "#ccc"
-                      :foreground "#000")
-
-  (set-face-attribute 'font-lock-builtin-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-comment-face nil :weight 'normal
-                      :foreground comment-foreground)
-
-  (set-face-attribute 'font-lock-constant-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-doc-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-function-name-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-keyword-face nil :weight 'normal
-                      :foreground "#ddd")
-
-  (set-face-attribute 'font-lock-string-face nil :weight 'normal
-                      :foreground string-foreground)
-
-  (set-face-attribute 'font-lock-type-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-variable-name-face nil :weight 'normal
-                      :foreground default-foreground)
+  (insert-pair -1 ?\[ ?\])
   )
 
-(defun _set-gray-theme ()
+(defun surround-with-quotes ()
+  (interactive)
+  (insert-pair -1 ?\' ?\')
+  )
+
+(defun surround-with-double-quotes ()
+  (interactive)
+  (insert-pair -1 ?\" ?\")
+  )
+
+(defun highlight-region ()
+  (interactive)
+  (unhighlight-regexp t)
+  (if mark-active
+	  (progn
+		(highlight-phrase (buffer-substring (region-beginning) (region-end)))
+		(deactivate-mark)
+		)
+	)
+  )
+
+(defun write-paren ()
+  (interactive)
+  (insert "()")
+  (backward-char)
+  )
+
+(defun write-braces ()
+  (interactive)
+  (insert "{}")
+  (backward-char)
+  )
+
+(defun write-brackets ()
+  (interactive)
+  (insert "[]")
+  (backward-char)
+  )
+
+(defun end-with-semicolon ()
+  (interactive)
+  (end-of-line)
+  (insert ";")
+  )
+
+;; ----------------- ;;
+;; ---- KEYMAPS ---- ;;
+;; ----------------- ;;
+(global-set-key (kbd "M-<f4>") 'kill-emacs)
+
+(global-set-key (kbd "C-!") 'write-paren)
+(global-set-key (kbd "C-\"") 'write-braces)
+(global-set-key (kbd "C-·") 'write-brackets)
+(global-set-key (kbd "C-$") 'end-with-semicolon)
+
+;; CTRL+KEY
+(global-set-key (kbd "C-+") 'execute-extended-command)
+
+(global-set-key (kbd "C-6") 'beginning-of-line)
+(global-set-key (kbd "C-7") 'move-text-down)
+(global-set-key (kbd "C-8") 'move-text-up)
+(global-set-key (kbd "C-9") 'end-of-line)
+
+(global-set-key (kbd "C-y") 'backward-delete-word)
+(global-set-key (kbd "C-u") 'delete-backward-char)
+(global-set-key (kbd "C-i") 'delete-char)
+(global-set-key (kbd "C-o") 'delete-word)
+
+(global-set-key (kbd "C-h") 'backward-char)
+(global-set-key (kbd "C-j") 'next-line)
+(global-set-key (kbd "C-k") 'previous-line)
+(global-set-key (kbd "C-l") 'forward-char)
+
+(global-set-key (kbd "C-n") 'backward-word)
+(global-set-key (kbd "C-m") 'forward-paragraph)
+(global-set-key (kbd "C-,") 'backward-paragraph)
+(global-set-key (kbd "C-.") 'forward-word)
+
+(global-set-key (kbd "C-z") 'undo)
+(global-set-key (kbd "C-x") 'cut-if-nonempty)
+(global-set-key (kbd "C-c") 'copy-if-nonempty)
+(global-set-key (kbd "C-v") 'yank)
+
+(global-set-key (kbd "C-1") 'select-line-no-whitespace)
+(global-set-key (kbd "C-2") 'select-function)
+(global-set-key (kbd "C-3") 'region-fill-lines)
+(global-set-key (kbd "C-4") 'kill-whole-line)
+(global-set-key (kbd "C-5") 'comment-line)
+
+(global-set-key (kbd "C-q") 'set-mark-command)
+(global-set-key (kbd "C-w") 'rectangle-mark-mode)
+(global-set-key (kbd "C-e") 'indent-region)
+(global-set-key (kbd "C-r") 'highlight-region)
+(global-set-key (kbd "C-t") 'delete-horizontal-space)
+
+(global-set-key (kbd "C-'") 'dabbrev-expand)
+(global-set-key (kbd "C-SPC") 'newline)
+(global-set-key (kbd "C-<tab>") 'other-window)
+
+;; CTRL+SHIFT+KEY
+;; ? and ¿ = Shift + keys that go after the number row
+(global-set-key (kbd "C-?") 'previous-buffer)
+(global-set-key (kbd "C-¿") 'next-buffer)
+(global-set-key (kbd "C-S-C") 'cut-if-nonempty)
+
+;; Ctrl+ç KEY
+(global-set-key (kbd "C-ç ESC") 'kill-this-buffer)
+(global-set-key (kbd "C-ç C-ç ESC") 'delete-window)
+(global-set-key (kbd "C-ç s") 'save-buffer)
+
+(global-set-key (kbd "C-ç x") 'open-explorer-here)
+(global-set-key (kbd "C-ç e") 'eval-buffer)
+(global-set-key (kbd "C-ç f") 'find-file)
+(global-set-key (kbd "C-ç b") 'switch-to-buffer)
+
+(global-set-key (kbd "C-ç r") 'read-only-mode)
+(global-set-key (kbd "C-ç t") '_set-next-theme)
+(global-set-key (kbd "C-ç g") 'goto-line)
+(global-set-key (kbd "C-ç c") 'copy-if-nonempty)
+
+(global-set-key (kbd "C-ç 7") 'end-of-buffer)
+(global-set-key (kbd "C-ç 8") 'beginning-of-buffer)
+
+(global-set-key (kbd "C-ç C-1") 'surround-with-paren)
+(global-set-key (kbd "C-ç C-2") 'surround-with-braces)
+(global-set-key (kbd "C-ç C-3") 'surround-with-brackets)
+(global-set-key (kbd "C-ç C-4") 'surround-with-double-quotes)
+(global-set-key (kbd "C-ç C-5") 'surround-with-quotes)
+
+;; specific mode rebindings
+(define-key c-mode-map (kbd "C-i") 'delete-char)
+(define-key c-mode-map (kbd "C-c") 'copy-if-nonempty)
+
+;; --------------- ;;
+;; ---- THEME ---- ;;
+;; --------------- ;;
+(setq current-theme -1)
+
+(defun _set-theme (arg)
+  (interactive)
+  (cond
+   ((= 0 current-theme) (_set-brown-theme))
+   ((= 1 current-theme) (_set-darkroot-theme))
+   ((= 2 current-theme) (_set-gray-theme))
+   ((= 3 current-theme) (_set-red-theme))
+   ((= 4 current-theme) (_set-light-theme))
+   )
+  )
+
+(defun _set-next-theme ()
   (interactive)
 
-  (setq default-foreground "#eee")
-  (setq comment-foreground "#8af")
-  (setq string-foreground "#aaa")
+  (set 'current-theme (1+ current-theme))
+  (cond
+   ((> current-theme 4)
+    (set 'current-theme 0))
+   )
 
-  (set-background-color "#202020")
-  (set-foreground-color default-foreground)
-
-  (set-face-attribute 'default nil
-                      :family "Liberation Mono"
-                      :height 110
-                      :weight 'normal
-                      :width 'normal)
-
-  (set-cursor-color "#fff")
-
-  (set-face-attribute 'region nil :weight 'normal
-                      :background "#ccc"
-                      :foreground "#000")
-
-  (set-face-attribute 'font-lock-builtin-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-comment-face nil :weight 'normal
-                      :foreground comment-foreground)
-
-  (set-face-attribute 'font-lock-constant-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-doc-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-function-name-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-keyword-face nil :weight 'normal
-                      :foreground "#ddd")
-
-  (set-face-attribute 'font-lock-string-face nil :weight 'normal
-                      :foreground string-foreground)
-
-  (set-face-attribute 'font-lock-type-face nil :weight 'normal
-                      :foreground default-foreground)
-
-  (set-face-attribute 'font-lock-variable-name-face nil :weight 'normal
-                      :foreground default-foreground)
+  (_set-theme current-theme)
   )
-
-(dolist (m (list c-mode-base-map emacs-lisp-mode-map))
-  (define-key m (kbd "<tab> t 1") '_set-light-theme)
-  (define-key m (kbd "<tab> t 2") '_set-darkroot-theme)
-  (define-key m (kbd "<tab> t 3") '_set-red-theme)
-  (define-key m (kbd "<tab> t 4") '_set-brown-theme)
-  (define-key m (kbd "<tab> t 5") '_set-gray-theme)
-  )
-
-;; DEFAULT THEME
-(add-hook 'emacs-startup-hook '_set-brown-theme)
